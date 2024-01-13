@@ -15,12 +15,13 @@ resource "aws_key_pair" "key_pair" {
   public_key = data.tls_public_key.bastion-public-key.public_key_openssh
 }
 
-resource "null_resource" "write_private_key" {
+resource "null_resource" "write_private_key_bastion" {
   depends_on = [aws_key_pair.key_pair]
 
   provisioner "local-exec" {
     command = <<-EOT
-      echo '${tls_private_key.bastion-private-key.private_key_pem}' > bastion-key-pair.pem
+      mkdir -p bastion-keys  # Create the folder if it doesn't exist   
+      echo '${tls_private_key.bastion-private-key.private_key_pem}' > bastion-keys/bastion-key-pair.pem
     EOT
   }
 }

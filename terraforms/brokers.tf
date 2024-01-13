@@ -15,6 +15,15 @@ resource "aws_security_group" "kafka_broker_sg" {
     self        = true # this make it explicit that instances associated with this security group can communicate with each other on port 9092
   }
 
+  ingress {
+    from_port   = 22  # SSH port
+    to_port     = 22
+    protocol    = "tcp"
+    # Add the source IP or security group that should be allowed to connect via SSH
+    # For example, if your bastion host is in a security group, you can reference it:
+    security_groups = [aws_security_group.bastion_sg.id]
+  }
+
 }
 
 resource "aws_instance" "kafka_broker" {
@@ -24,6 +33,7 @@ resource "aws_instance" "kafka_broker" {
   instance_type = "t2.large"     # Choose an appropriate instance type # 8GB RAM and 2 vCPUs 
 
   subnet_id = element(aws_subnet.private_subnets[*].id, count.index)
+  key_name = aws_key_pair.brokers_key_pair.key_name  # Use the key name from the created key pair
 
   # Security group configuration (modify as needed)
   vpc_security_group_ids = [aws_security_group.kafka_broker_sg.id]

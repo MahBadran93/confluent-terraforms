@@ -17,8 +17,9 @@ resource "aws_subnet" "private_subnets" {
  vpc_id     = aws_vpc.main.id
  cidr_block = element(var.private_subnet_cidrs, count.index)
  availability_zone = element(var.azs, count.index) # availability zone for each subnet
- 
+
  tags = {
    Name = "Private Subnet ${count.index + 1}"
  }
 }
+

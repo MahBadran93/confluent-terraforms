@@ -11,6 +11,17 @@ resource "aws_security_group" "bastion_sg" {
     protocol    = "tcp"
     cidr_blocks = ["139.190.184.234/32"] # Allow SSH only from my IP - mahmoud local machine 
   }
+  # allow outbound traffic to the private subnets
+  dynamic egress {
+    for_each = aws_subnet.private_subnets
+    content {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = [egress.value.cidr_block]
+    }
+  }
+
 
   # Add any other necessary rules...
 }
