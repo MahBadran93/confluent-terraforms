@@ -21,6 +21,7 @@ resource "aws_instance" "bastion_host" {
   instance_type = "t2.medium"            # Choose an appropriate instance type
 
   subnet_id               = element(aws_subnet.public_subnets[*].id, 0)
+  associate_public_ip_address = true
 #   key_name                = "your_key_pair_name"  # Replace with your key pair name
   vpc_security_group_ids  = [aws_security_group.bastion_sg.id]
 
