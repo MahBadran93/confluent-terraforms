@@ -16,6 +16,13 @@ resource "aws_security_group" "kafka_broker_sg" {
   }
 
   ingress {
+    from_port   = 2181
+    to_port     = 2181
+    protocol    = "tcp"
+    security_groups = [aws_security_group.kafka_zookeeper_sg.id] # allow incoming traffic to kafka brokers nodes on port 2181 from the security group of zookeeper nodeds for tasks like leader election 
+  }
+
+  ingress {
     from_port   = 22  # SSH port
     to_port     = 22
     protocol    = "tcp"

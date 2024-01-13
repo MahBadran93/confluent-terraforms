@@ -19,7 +19,7 @@ resource "aws_security_group" "kafka_zookeeper_sg" {
     from_port   = 9092
     to_port     = 9092
     protocol    = "tcp"
-    security_groups = [aws_security_group.kafka_broker_sg.id] # allow incoming traffic on port 9092 from the security group of kafka brokers 
+    security_groups = [aws_security_group.kafka_broker_sg.id] # allow incoming traffic to zookeeper nodes on port 9092 from the security group of kafka brokers for tasks like leader election 
   }
 
   ingress {
