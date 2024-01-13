@@ -17,23 +17,6 @@ resource "aws_security_group" "kafka_broker_sg" {
 
 }
 
-# # Provider for the first region
-# provider "aws" {
-#   alias  = "region1"
-#   region = "us-east-1a"  # Replace with the first region
-# }
-
-# provider "aws" {
-#   alias  = "region2"
-#   region = "us-east-1b"  # Replace with the second region
-# }
-
-# provider "aws" {
-#   alias  = "region3"
-#   region = "us-east-1c"  # Replace with the third region
-# }
-
-
 resource "aws_instance" "kafka_broker" {
   count = 3  # Number of instances you want to create
 
