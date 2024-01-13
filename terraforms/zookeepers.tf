@@ -1,5 +1,11 @@
 # create a security group for kafka zookeepers 
 
+
+data "aws_security_group" "kafka_broker_sg" {
+  name = "kafka-broker-sg"
+}
+
+
 # When you define a security group rule allowing traffic on port 9092 in your aws_security_group resource, 
 #it permits incoming traffic on that port from other instances associated with the same security group within the VPC.
 # so, our three instances are associated with the same security group, so they can communicate with each other on port 9092, to setup for kafka later
@@ -19,7 +25,7 @@ resource "aws_security_group" "kafka_zookeeper_sg" {
     from_port   = 9092
     to_port     = 9092
     protocol    = "tcp"
-    security_groups = [aws_security_group.kafka_broker_sg.id] # allow incoming traffic to zookeeper nodes on port 9092 from the security group of kafka brokers for tasks like leader election 
+    security_groups = [data.aws_security_group.kafka_broker_sg.id] # allow incoming traffic to zookeeper nodes on port 9092 from the security group of kafka brokers for tasks like leader election 
   }
 
   ingress {
@@ -44,21 +50,35 @@ resource "aws_instance" "kafka_zookeeper" {
 
   # Security group configuration (modify as needed)
   vpc_security_group_ids = [aws_security_group.kafka_zookeeper_sg.id]
-
-#   key_name = "your_key_pair_name"  # Replace with your key pair name
-
-#   # User data script to install Kafka or other configurations (modify as needed)
-#   user_data = <<-EOF
-#               #!/bin/bash
-#               # Your user data script here
-#               EOF
+  # Specify the mount point and perform the mounting
 
   tags = {
     Name = "kafka-zookeeper-${count.index + 1}"
   }
+
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "sudo mkfs -t ext4 /dev/xvdf",
+  #     "sudo mkdir /home/ec2-user/EBSDirectory",
+  #     "sudo mount /dev/xvdf /home/ec2-user/EBSDirectory"
+  #   ]
+
+  #   connection {
+  #     type        = "ssh"
+  #     user        = "ec2-user"
+  #     private_key = file("kafka-self-hosted/confluent-terraforms/terraforms/broker-keys/brokers-key-pair.pem")
+  #     host        = self.public_ip
+  #   }
+  # }
+
 }
+
+
+
 
 
 output "kafka_zookeeper_ips" {
   value = [for instance in aws_instance.kafka_zookeeper : instance.private_ip]
 }
+
+

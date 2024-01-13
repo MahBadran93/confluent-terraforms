@@ -1,8 +1,16 @@
 # create a security group for kafka brokers 
 
+# Define a data source to get the security group IDs
+data "aws_security_group" "kafka_zookeeper_sg" {
+  name = "kafka-zookeeper-sg"
+}
+
+
+
 # When you define a security group rule allowing traffic on port 9092 in your aws_security_group resource, 
 #it permits incoming traffic on that port from other instances associated with the same security group within the VPC.
 # so, our three instances are associated with the same security group, so they can communicate with each other on port 9092, to setup for kafka later
+
 resource "aws_security_group" "kafka_broker_sg" {
   name        = "kafka-broker-sg"
   description = "Security group for Kafka brokers in private subnet"
@@ -19,7 +27,7 @@ resource "aws_security_group" "kafka_broker_sg" {
     from_port   = 2181
     to_port     = 2181
     protocol    = "tcp"
-    security_groups = [aws_security_group.kafka_zookeeper_sg.id] # allow incoming traffic to kafka brokers nodes on port 2181 from the security group of zookeeper nodeds for tasks like leader election 
+    security_groups = [data.aws_security_group.kafka_zookeeper_sg.id] # allow incoming traffic to kafka brokers nodes on port 2181 from the security group of zookeeper nodeds for tasks like leader election 
   }
 
   ingress {
