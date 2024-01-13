@@ -9,10 +9,17 @@ resource "aws_security_group" "kafka_zookeeper_sg" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
+    from_port   = 2181
+    to_port     = 2181
+    protocol    = "tcp"
+    self        = true # this make it explicit that instances associated with this security group can communicate with each other on port 9092
+  }
+
+   ingress {
     from_port   = 9092
     to_port     = 9092
     protocol    = "tcp"
-    self        = true # this make it explicit that instances associated with this security group can communicate with each other on port 9092
+    security_groups = [aws_security_group.kafka_broker_sg.id] # allow incoming traffic on port 9092 from the security group of kafka brokers 
   }
 
   ingress {
