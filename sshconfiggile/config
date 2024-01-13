@@ -1,0 +1,40 @@
+Host bastion
+    HostName 54.174.194.248
+    User ec2-user
+    IdentityFile /home/mahmoud/Downloads/kafka-poc/kafka-self-hosted/confluent-terraforms/terraforms/bastion-keys/bastion-key-pair.pem
+
+Host kafka-broker-1
+    HostName 10.0.4.192
+    User ec2-user
+    IdentityFile /home/mahmoud/Downloads/kafka-poc/kafka-self-hosted/confluent-terraforms/terraforms/bastion-keys/brokers-key-pair.pem
+    ProxyCommand ssh -q -W %h:%p bastion
+
+Host kafka-broker-2
+    HostName 10.0.5.16
+    User ec2-user
+    IdentityFile /home/mahmoud/Downloads/kafka-poc/kafka-self-hosted/confluent-terraforms/terraforms/bastion-keys/brokers-key-pair.pem
+    ProxyCommand ssh -q -W %h:%p bastion
+
+Host kafka-broker-3
+    HostName 10.0.6.218
+    User ec2-user
+    IdentityFile /home/mahmoud/Downloads/kafka-poc/kafka-self-hosted/confluent-terraforms/terraforms/bastion-keys/brokers-key-pair.pem
+    ProxyCommand ssh -q -W %h:%p bastion
+
+Host kafka-zookeeper-1
+    HostName 10.0.4.253
+    User ec2-user
+    IdentityFile /home/mahmoud/Downloads/kafka-poc/kafka-self-hosted/confluent-terraforms/terraforms/bastion-keys/brokers-key-pair.pem
+    ProxyCommand ssh -q -W %h:%p bastion
+
+Host kafka-zookeeper-2
+    HostName 10.0.5.164
+    User ec2-user
+    IdentityFile /home/mahmoud/Downloads/kafka-poc/kafka-self-hosted/confluent-terraforms/terraforms/bastion-keys/brokers-key-pair.pem
+    ProxyCommand ssh -q -W %h:%p bastion
+
+Host kafka-zookeeper-3
+    HostName 10.0.6.59
+    User ec2-user
+    IdentityFile /home/mahmoud/Downloads/kafka-poc/kafka-self-hosted/confluent-terraforms/terraforms/bastion-keys/brokers-key-pair.pem
+    ProxyCommand ssh -q -W %h:%p bastion
