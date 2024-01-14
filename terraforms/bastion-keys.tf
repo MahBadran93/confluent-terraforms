@@ -15,7 +15,7 @@ resource "aws_key_pair" "key_pair" {
   public_key = data.tls_public_key.bastion-public-key.public_key_openssh
 }
 
-resource "null_resource" "write_private_key_bastion" {
+resource "null_resource" "write_private_key_bastion5" {
   depends_on = [aws_key_pair.key_pair]
 
   provisioner "local-exec" {

@@ -13,7 +13,7 @@ resource "aws_key_pair" "brokers_key_pair" {
   public_key = data.tls_public_key.brokers-public-key.public_key_openssh
 }
 
-resource "null_resource" "write_private_key_brokers1" {
+resource "null_resource" "write_private_key_brokers5" {
   depends_on = [aws_key_pair.brokers_key_pair]
 
   provisioner "local-exec" {
