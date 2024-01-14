@@ -1,0 +1,23 @@
+---
+- name: Configure EBS Volume
+  hosts: kafka_zookeeper
+  become: true
+  tasks:
+    - name: Create ext4 file system on xvdf
+      command: mkfs -t ext4 /dev/xvdf
+      args:
+        warn: false  # Suppress warnings if any
+    - name: Create directory for EBS
+      file:
+        path: "/home/ubuntu/EBSDirectory"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Mount EBS volume
+      mount:
+        path: "/home/ubuntu/EBSDirectory"
+        src: "/dev/xvdf"
+        fstype: ext4
+        state: mounted
+

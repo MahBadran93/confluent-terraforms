@@ -1,0 +1,57 @@
+---
+- name: Setup ZooKeeper Ensemble
+  hosts: kafka_zookeeper
+  become: true
+  tasks:
+    - name: Debug ansible_pkg_mgr
+      debug:
+        var: ansible_pkg_mgr
+    - name: Install Docker (Debian-based systems)
+      become: true
+      apt:
+        name: 
+        - docker.io
+        - python3-pip
+        state: present
+      when: ansible_pkg_mgr == 'apt'
+      tags:
+        - docker
+    - name: Install Docker (Red Hat-based systems)
+      become: true
+      dnf:
+        name: docker
+        state: present
+      when: ansible_pkg_mgr == 'dnf'
+      tags:
+        - docker
+
+    - name: Install Docker Python module
+      become: true
+      pip:
+        name: docker
+        executable: pip3
+      tags:
+        - docker
+
+    - name: Pull Confluent ZooKeeper Docker image
+      docker_image:
+        name: confluentinc/cp-zookeeper:latest
+
+    - name: Create ZooKeeper data directory
+      file:
+        path: "/home/ec2-user/EBSDirectory/zookeeper"
+        state: directory
+
+    - name: Start ZooKeeper container
+      docker_container:
+        name: zookeeper
+        image: confluentinc/cp-zookeeper:latest
+        ports:
+          - "2181:2181"
+        volumes:
+          - "/home/ec2-user/EBSDirectory/zookeeper://home/ec2-user/EBSDirectory/zookeeper"
+        environment:
+          - ZOOKEEPER_SERVER_ID={{ inventory_hostname | replace(".", "") }}
+          - ZOOKEEPER_CLIENT_PORT=2181
+          - ZOOKEEPER_TICK_TIME=2000
+        state: started

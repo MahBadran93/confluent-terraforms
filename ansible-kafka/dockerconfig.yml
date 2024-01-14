@@ -1,0 +1,44 @@
+---
+- name: Setup ZooKeeper Ensemble
+  hosts: kafka_zookeeper
+  become: true
+  tasks:
+    - name: Install dnf
+      dnf:
+        name: dnf
+        state: present
+
+    - name: Install required system packages
+      dnf:
+        name:
+          - dnf-plugins-core
+          - python3-pip
+          - python3-virtualenv
+          - python3-setuptools
+          - python3-devel
+          - libffi-devel
+          - openssl-devel
+        state: present
+
+    - name: Add Docker GPG dnf Key
+      rpm_key:
+        key: https://download.docker.com/linux/fedora/gpg
+        state: present
+
+    - name: Add Docker Repository
+      dnf_repository:
+        name: docker
+        baseurl: https://download.docker.com/linux/fedora/33/$basearch/stable
+        gpgkey: https://download.docker.com/linux/fedora/gpg
+        enabled: yes
+        state: present
+
+    - name: Update dnf and install docker-ce
+      dnf:
+        name: docker-ce
+        state: latest
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+        executable: pip3
