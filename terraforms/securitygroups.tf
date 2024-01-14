@@ -33,6 +33,14 @@ resource "aws_security_group" "kafka_zookeeper_sg" {
     security_groups = [aws_security_group.bastion_sg.id]
   }
 
+   # Allow outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 }
 
 
@@ -69,6 +77,14 @@ resource "aws_security_group" "kafka_broker_sg" {
     security_groups = [aws_security_group.bastion_sg.id]
   }
 
+   # Allow outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 }
 
 
@@ -93,8 +109,17 @@ resource "aws_security_group_rule" "allow_incoming_traffic_to_zookeepers" {
     security_group_id = aws_security_group.kafka_zookeeper_sg.id
     source_security_group_id = aws_security_group.kafka_broker_sg.id
 }
+# # Allow outgoing traffic from zookeeper nodes to Kafka brokers on port 9092
+# resource "aws_security_group_rule" "allow_outgoing_traffic_to_kafka" {
+#   type                     = "egress"
+#   from_port                = 0
+#   to_port                  = 0
+#   protocol                 = "-1"
 
+#   cidr_blocks = ["0.0.0.0/0"]
+# }
 
+ 
 
 
 
@@ -109,7 +134,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["139.190.184.234/32"] # Allow SSH only from my IP - mahmoud local machine 
+    cidr_blocks = ["212.33.113.168/32"] # Allow SSH only from my IP - mahmoud local machine dynamic ip needs to be changed just for testing
   }
   # allow outbound traffic to the private subnets
   dynamic egress {
@@ -124,4 +149,22 @@ resource "aws_security_group" "bastion_sg" {
 
 
   # Add any other necessary rules...
+}
+
+
+
+# create NAT security group
+# Security Group for NAT Gateway
+resource "aws_security_group" "nat_sg" {
+  name        = "nat-security-group"
+  description = "Security group for the NAT gateway"
+  vpc_id      = aws_vpc.main.id
+
+  # Outbound rule for allowing all traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
